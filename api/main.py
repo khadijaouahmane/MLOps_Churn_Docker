@@ -86,7 +86,11 @@ def predict(payload: ChurnInput):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# --- Route UI ---
+# --- Route UI (corrigée pour Starlette 1.0+) ---
 @app.get("/ui", response_class=HTMLResponse, tags=["UI"], include_in_schema=False)
 def ui_home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={},
+    )
