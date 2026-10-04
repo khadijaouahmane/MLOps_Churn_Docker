@@ -3,12 +3,22 @@ import json
 import os
 import pickle
 import time
+from pathlib import Path
 
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from api.schemas import ChurnInput, ChurnOutput
+
+# --- Chemins de base ---
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(BASE_DIR, "model", "pipeline_churn.pkl")
+META_PATH = os.path.join(BASE_DIR, "model", "metadata.json")
+UI_DIR = Path(BASE_DIR) / "flask_app"
 
 app = FastAPI(
     title="Telco Churn Prediction API",
@@ -16,10 +26,13 @@ app = FastAPI(
     version="1.1.0",
 )
 
-# En prod, restreignez avec ALLOWED_ORIGINS="https://mon-front.herokuapp.com"
 origins = os.environ.get("ALLOWED_ORIGINS", "*").split(",")
-app.add_middleware(CORSMiddleware, allow_origins=origins,
-                   allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.middleware("http")
@@ -30,10 +43,7 @@ async def add_process_time(request: Request, call_next):
     return response
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, "model", "pipeline_churn.pkl")
-META_PATH = os.path.join(BASE_DIR, "model", "metadata.json")
-
+# --- Chargement du modèle ---
 with open(MODEL_PATH, "rb") as f:
     pipeline = pickle.load(f)
 
@@ -43,6 +53,14 @@ if os.path.exists(META_PATH):
         metadata = json.load(f)
 
 
+# --- UI Jinja2 ---
+templates = Jinja2Templates(directory=str(UI_DIR / "templates"))
+
+if (UI_DIR / "static").exists():
+    app.mount("/static", StaticFiles(directory=str(UI_DIR / "static")), name="static")
+
+
+# --- Routes API ---
 @app.get("/", tags=["Info"])
 def home():
     return {"message": "Telco Churn API", "docs": "/docs", "metadata": metadata}
@@ -66,3 +84,9 @@ def predict(payload: ChurnInput):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# --- Route UI ---
+@app.get("/ui", response_class=HTMLResponse, tags=["UI"], include_in_schema=False)
+def ui_home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
