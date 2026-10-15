@@ -280,7 +280,7 @@ Voir \[`DEPLOY.md`](./DEPLOY.md) pour le détail complet.
 
 \*\*K. Ouahmane\*\* — Projet MLOps
 
-📧 k.ouahmane3359@uca.ac.ma
+📧 khadijaouahmane13@gmail.com
 
 
 
