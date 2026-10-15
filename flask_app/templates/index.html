@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telco Churn — Prédiction</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>📊 Prédiction de Churn</h1>
+        <p>Remplissez le formulaire pour estimer la probabilité qu'un client quitte le service.</p>
+        <nav>
+            <a href="/ui">Accueil</a>
+            <a href="/docs" target="_blank">API Docs</a>
+        </nav>
+    </header>
+
+    <main>
+        <form id="churn-form">
+            <section>
+                <h2>Informations client</h2>
+
+                <label>Genre
+                    <select name="gender">
+                        <option value="Male">Homme</option>
+                        <option value="Female">Femme</option>
+                    </select>
+                </label>
+
+                <label>Senior
+                    <select name="SeniorCitizen">
+                        <option value="0">Non</option>
+                        <option value="1">Oui</option>
+                    </select>
+                </label>
+
+                <label>Partenaire
+                    <select name="Partner">
+                        <option value="No">Non</option>
+                        <option value="Yes">Oui</option>
+                    </select>
+                </label>
+
+                <label>Personnes à charge
+                    <select name="Dependents">
+                        <option value="No">Non</option>
+                        <option value="Yes">Oui</option>
+                    </select>
+                </label>
+
+                <label>Ancienneté (mois)
+                    <input type="number" name="tenure" value="12" min="0" max="100">
+                </label>
+            </section>
+
+            <section>
+                <h2>Services souscrits</h2>
+
+                <label>Téléphone
+                    <select name="PhoneService">
+                        <option value="Yes">Oui</option>
+                        <option value="No">Non</option>
+                    </select>
+                </label>
+
+                <label>Lignes multiples
+                    <select name="MultipleLines">
+                        <option value="No">Non</option>
+                        <option value="Yes">Oui</option>
+                        <option value="No phone service">Pas de service téléphonique</option>
+                    </select>
+                </label>
+
+                <label>Internet
+                    <select name="InternetService">
+                        <option value="Fiber optic">Fibre optique</option>
+                        <option value="DSL">DSL</option>
+                        <option value="No">Aucun</option>
+                    </select>
+                </label>
+
+                <label>Sécurité en ligne
+                    <select name="OnlineSecurity">
+                        <option value="No">Non</option>
+                        <option value="Yes">Oui</option>
+                        <option value="No internet service">Pas d'internet</option>
+                    </select>
+                </label>
+
+                <label>Sauvegarde en ligne
+                    <select name="OnlineBackup">
+                        <option value="No">Non</option>
+                        <option value="Yes">Oui</option>
+                        <option value="No internet service">Pas d'internet</option>
+                    </select>
+                </label>
+
+                <label>Protection appareil
+                    <select name="DeviceProtection">
+                        <option value="No">Non</option>
+                        <option value="Yes">Oui</option>
+                        <option value="No internet service">Pas d'internet</option>
+                    </select>
+                </label>
+
+                <label>Support technique
+                    <select name="TechSupport">
+                        <option value="No">Non</option>
+                        <option value="Yes">Oui</option>
+                        <option value="No internet service">Pas d'internet</option>
+                    </select>
+                </label>
+
+                <label>Streaming TV
+                    <select name="StreamingTV">
+                        <option value="No">Non</option>
+                        <option value="Yes">Oui</option>
+                        <option value="No internet service">Pas d'internet</option>
+                    </select>
+                </label>
+
+                <label>Streaming Films
+                    <select name="StreamingMovies">
+                        <option value="No">Non</option>
+                        <option value="Yes">Oui</option>
+                        <option value="No internet service">Pas d'internet</option>
+                    </select>
+                </label>
+            </section>
+
+            <section>
+                <h2>Facturation</h2>
+
+                <label>Contrat
+                    <select name="Contract">
+                        <option value="Month-to-month">Mensuel</option>
+                        <option value="One year">1 an</option>
+                        <option value="Two year">2 ans</option>
+                    </select>
+                </label>
+
+                <label>Facturation dématérialisée
+                    <select name="PaperlessBilling">
+                        <option value="Yes">Oui</option>
+                        <option value="No">Non</option>
+                    </select>
+                </label>
+
+                <label>Mode de paiement
+                    <select name="PaymentMethod">
+                        <option value="Electronic check">Chèque électronique</option>
+                        <option value="Mailed check">Chèque postal</option>
+                        <option value="Bank transfer (automatic)">Virement automatique</option>
+                        <option value="Credit card (automatic)">Carte de crédit automatique</option>
+                    </select>
+                </label>
+
+                <label>Charges mensuelles ($)
+                    <input type="number" step="0.01" name="MonthlyCharges" value="70.5">
+                </label>
+
+                <label>Charges totales ($)
+                    <input type="number" step="0.01" name="TotalCharges" value="850">
+                </label>
+            </section>
+
+            <button type="submit">Prédire</button>
+        </form>
+
+        <div id="result" class="hidden">
+            <h2>Résultat</h2>
+            <p id="result-label"></p>
+            <p id="result-proba"></p>
+            <p id="result-time"></p>
+        </div>
+    </main>
+
+    <footer>
+        <p>Modèle : scikit-learn · API : FastAPI · Déploiement : Heroku</p>
+    </footer>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
