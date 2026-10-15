@@ -1,23 +1,25 @@
-# Déploiement Heroku (2 apps, 1 dépôt)
+# Déployer l’API FastAPI conteneurisée sur Heroku
 
-Architecture : **Navigateur → Flask (front) → FastAPI (API) → modèle `.pkl`**
+Le conteneur embarque l’API FastAPI, l’interface servie sur `/ui` et le pipeline scikit-learn sérialisé. Heroku construit l’image à partir du `Dockerfile` grâce à `heroku.yml`.
+
+## Déploiement sur l’application existante
+
+Depuis la racine du dépôt, avec Heroku CLI connecté :
 
 ```bash
-git init && git add . && git commit -m "ChurnGuard"
-heroku login
-
-# 1) L'API (seule à charger le modèle)
-heroku create churn-api-<votre-nom>
-heroku config:set APP_ROLE=api -a churn-api-<votre-nom>
-git push heroku main
-
-# 2) L'interface
-heroku create churn-front-<votre-nom>
-heroku config:set APP_ROLE=front API_URL=https://churn-api-<votre-nom>.herokuapp.com -a churn-front-<votre-nom>
-git remote add front https://git.heroku.com/churn-front-<votre-nom>.git
-git push front main
+heroku stack:set container --app ouahmane-churn-mlops
+git add Dockerfile .dockerignore heroku.yml DEPLOY.md
+git commit -m "Deploy FastAPI as a Docker image"
+git push heroku HEAD:master
 ```
 
-Notes : `heroku open -a churn-front-<votre-nom>` ouvre l'interface ; la doc Swagger de l'API est sur `/docs`.
-Après `git push heroku main`, vérifiez que `heroku` pointe bien vers l'API (`git remote -v`).
-Test local : `uvicorn api.main:app --port 8000` puis `python -m flask_app.app`.
+L’application écoute le port fourni par Heroku (`PORT`). Une fois le déploiement terminé, l’interface est disponible sur `/ui`, la documentation Swagger sur `/docs` et l’état de santé sur `/health`.
+
+## Construction et lancement locaux (Docker installé)
+
+```bash
+docker build --platform linux/amd64 -t churn-api .
+docker run --rm -p 8000:8000 -e PORT=8000 churn-api
+```
+
+L’API locale répond sur `http://localhost:8000`; l’interface est sur `/ui`.

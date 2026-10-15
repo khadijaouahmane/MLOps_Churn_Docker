@@ -1,0 +1,13 @@
+.git/
+.fastapicloud/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.ipynb
+.ipynb_checkpoints/
+.pytest_cache/
+tests/
+data/
+*.zip
+.env
